@@ -7,11 +7,11 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:vite\" \"npm run dev:electron:build\" \"npm run dev:electron\"",
     "dev:vite": "vite",
-    "dev:electron:build": "tsc -w -p electron/tsconfig.json",
+    "dev:electron:build": "node scripts/build-electron.js",
     "dev:electron": "wait-on http://localhost:8888 dist-electron/main.js && electron .",
     "build": "npm run build:vite && npm run build:electron && electron-builder",
     "build:vite": "vite build",
-    "build:electron": "tsc -p electron/tsconfig.json",
+    "build:electron": "node scripts/build-electron.js",
     "preview": "vite preview"
   },
   "keywords": [
@@ -48,6 +48,7 @@
     "files": [
       "dist/**/*",
       "dist-electron/**/*",
+      "build/**/*",
       "package.json"
     ],
     "win": {

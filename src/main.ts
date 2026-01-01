@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import './web-shim' // Import web compatibility layer
 import App from './App.vue'
 import './style.css'
 
