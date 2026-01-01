@@ -140,47 +140,45 @@ function createTray() {
     tray.setContextMenu(contextMenu)
     
     tray.on('click', async () => {
-      let allWindowsVisible = true
+      const allNotes = await db.getAllNotes()
       
-      // Check if all windows are visible
-      for (const win of noteWindows.values()) {
-        if (!win.isVisible() || win.isMinimized()) {
-          allWindowsVisible = false
-          break
+      if (allNotes.length === 0) {
+        const note = db.createNote({})
+        if (mainWindow) {
+          mainWindow.webContents.send('note-created', note)
         }
+        createNoteWindow(note.id)
+        return
       }
 
-      if (allWindowsVisible && noteWindows.size > 0) {
-        // Hide all windows
-        for (const win of noteWindows.values()) {
-          win.hide()
-        }
+      // The first one is the latest because getAllNotes sorts by createdAt desc
+      const latestNote = allNotes[0]
+      let latestWin = noteWindows.get(latestNote.id)
+      
+      const isVisible = latestWin && !latestWin.isDestroyed() && latestWin.isVisible() && !latestWin.isMinimized()
+
+      if (isVisible) {
+        latestWin?.hide()
       } else {
-        // Show all windows
-        for (const win of noteWindows.values()) {
-          if (win.isMinimized()) {
-            win.restore()
+        // Hide other windows
+        for (const [id, win] of noteWindows) {
+          if (id !== latestNote.id && !win.isDestroyed()) {
+            win.hide()
           }
-          win.show()
-          win.setSkipTaskbar(false) // Ensure it shows in taskbar when restored
         }
         
-        // Also show all notes that might not have windows yet (if we implement persistence fully)
-        // For now, we just restore existing windows.
-        // If no windows exist, maybe we should create one? Or just do nothing?
-        // Let's create one if none exist, acting like "open app"
-        if (noteWindows.size === 0) {
-           const allNotes = await db.getAllNotes()
-           if (allNotes.length > 0) {
-             allNotes.forEach((note: any) => createNoteWindow(note.id))
-           } else {
-             // If no notes at all, create a new one
-             const note = db.createNote({})
-             if (mainWindow) {
-                mainWindow.webContents.send('note-created', note)
-             }
-             createNoteWindow(note.id)
-           }
+        // Show latest window
+        if (!latestWin || latestWin.isDestroyed()) {
+          createNoteWindow(latestNote.id)
+          latestWin = noteWindows.get(latestNote.id)
+        }
+        
+        if (latestWin && !latestWin.isDestroyed()) {
+          if (latestWin.isMinimized()) latestWin.restore()
+          latestWin.show()
+          latestWin.setSkipTaskbar(false)
+          latestWin.moveTop()
+          latestWin.focus()
         }
       }
     })
