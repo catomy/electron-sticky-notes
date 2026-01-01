@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import './web-shim' // Import web compatibility layer
 import NoteApp from './NoteApp.vue'
 import './style.css'
 
