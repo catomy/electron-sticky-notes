@@ -149,6 +149,30 @@ if (typeof (window as any).electronAPI === 'undefined') {
     togglePin: async () => console.log('Web版不支持置顶'),
     closeWindow: async () => console.log('Web版不支持关闭窗口'),
     minimizeWindow: async () => console.log('Web版不支持最小化'),
-    showContextMenu: async () => console.log('Web版不支持上下文菜单')
+    showContextMenu: async () => console.log('Web版不支持上下文菜单'),
+    
+    // Missing methods implementation
+    getNoteId: () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('id');
+    },
+    setAlwaysOnTop: async (id: string, flag: boolean) => {
+      console.log('Web版不支持置顶', id, flag)
+    },
+    minimizeNoteWindow: async (id: string) => {
+      console.log('Web版不支持最小化', id)
+    },
+    closeNoteWindow: async (id: string) => {
+      window.close()
+    },
+    onNoteColorChanged: (callback: any) => {
+       // Mock implementation
+    },
+    onNoteStyleChanged: (callback: any) => {
+       // Mock implementation
+    },
+    applyWindowSettings: async () => {
+       // Mock implementation
+    }
   }
 }
