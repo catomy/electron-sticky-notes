@@ -123,6 +123,14 @@ if (typeof (window as any).electronAPI === 'undefined') {
       const db = getDB()
       return db.settings
     },
+    // Alias getNotes to getAllNotes for compatibility
+    getNotes: async () => {
+      const db = getDB()
+      return db.notes
+    },
+    openNote: async (id: string) => {
+       window.open(`/note.html?id=${id}`, '_blank', 'width=300,height=400,menubar=no,toolbar=no,location=no,status=no')
+    },
     onNoteCreated: (callback: any) => {
       if (!listeners['note-created']) listeners['note-created'] = []
       listeners['note-created'].push((_event: any, note: any) => callback(note)) // Adapt signature
